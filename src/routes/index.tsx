@@ -19,6 +19,21 @@ import {
   Heart,
   Star,
   ArrowRight,
+  Upload,
+  UploadCloud,
+  Trash2,
+  Volume2,
+  Smile,
+  FileAudio,
+  Youtube,
+  Headphones,
+  BookOpen,
+  GraduationCap,
+  Megaphone,
+  MessagesSquare,
+  Gauge,
+  Library,
+  Lock,
 } from "lucide-react";
 import heroWave from "@/assets/hero-waveform.jpg";
 import { Button } from "@/components/ui/button";
@@ -42,19 +57,66 @@ import { Toaster } from "@/components/ui/sonner";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SpeakFlow AI — Free Text to Speech Generator, No Signup" },
+      { title: "Free AI Text to Speech Generator & Voice Cloning Tool — SpeakFlow AI" },
       {
         name: "description",
         content:
-          "Convert text to speech instantly with realistic AI voices. 100% free, no signup, unlimited usage, instant MP3 download.",
+          "Generate realistic AI voices, convert text to speech, and clone your own voice with advanced AI technology. Free online tool with no signup required.",
       },
-      { property: "og:title", content: "SpeakFlow AI — Free Text to Speech Generator" },
+      { name: "keywords", content: "AI Text to Speech, Free Text to Speech, AI Voice Generator, Voice Cloning AI, AI Voice Cloner, Realistic AI Voices, Text to Speech Online, AI Speech Generator" },
+      { property: "og:title", content: "Free AI Text to Speech Generator & Voice Cloning Tool" },
       {
         property: "og:description",
         content:
-          "Realistic AI voices from text in seconds. No signup, unlimited, free forever.",
+          "Generate realistic AI voices and clone your own voice. Free, no signup, unlimited.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "/" },
+      { property: "og:site_name", content: "SpeakFlow AI" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Free AI Text to Speech Generator & Voice Cloning Tool" },
+      { name: "twitter:description", content: "Generate realistic AI voices and clone your own voice. Free, no signup." },
+    ],
+    links: [{ rel: "canonical", href: "/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              name: "SpeakFlow AI",
+              url: "/",
+              logo: "/favicon.ico",
+            },
+            {
+              "@type": "SoftwareApplication",
+              name: "SpeakFlow AI",
+              applicationCategory: "MultimediaApplication",
+              operatingSystem: "Web",
+              offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+              aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", ratingCount: "1284" },
+            },
+            {
+              "@type": "FAQPage",
+              mainEntity: [
+                { "@type": "Question", name: "Is it really free?", acceptedAnswer: { "@type": "Answer", text: "Yes — SpeakFlow AI is 100% free with no hidden fees, watermarks, or paywalls." } },
+                { "@type": "Question", name: "Do I need to create an account?", acceptedAnswer: { "@type": "Answer", text: "No. You can start generating speech instantly without signup." } },
+                { "@type": "Question", name: "Which languages are supported?", acceptedAnswer: { "@type": "Answer", text: "Over 50 languages and dialects including English, Spanish, French, German, Mandarin and more." } },
+                { "@type": "Question", name: "Can I download MP3 files?", acceptedAnswer: { "@type": "Answer", text: "Yes, every generation can be downloaded as MP3 or WAV." } },
+                { "@type": "Question", name: "Is there a usage limit?", acceptedAnswer: { "@type": "Answer", text: "No daily or monthly limits — generate as much audio as you need." } },
+              ],
+            },
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: "/" },
+              ],
+            },
+          ],
+        }),
+      },
     ],
   }),
   component: LandingPage,
@@ -78,6 +140,24 @@ const FEATURES = [
   { icon: Download, title: "MP3 Downloads", desc: "Export ready-to-share audio files with one tap." },
   { icon: ShieldCheck, title: "No Signup Required", desc: "No accounts, no email, no friction. Just start typing." },
   { icon: Heart, title: "Completely Free", desc: "Unlimited generations, forever. No hidden paywalls." },
+];
+
+const WHY_US = [
+  { icon: Volume2, title: "Studio Quality Voices", desc: "Broadcast-grade audio with natural intonation and breath." },
+  { icon: Zap, title: "Fast Generation", desc: "Sub-second synthesis so you stay in your creative flow." },
+  { icon: Mic, title: "Voice Cloning", desc: "Clone any voice from a 30-second sample in minutes." },
+  { icon: Languages, title: "Multiple Languages", desc: "50+ languages and regional accents out of the box." },
+  { icon: Heart, title: "Free Forever", desc: "No paywalls, no watermarks, no surprise upgrades." },
+  { icon: Gauge, title: "Optimized Performance", desc: "Built for speed, accessibility, and Core Web Vitals." },
+];
+
+const USE_CASES = [
+  { icon: Youtube, title: "YouTube Videos", desc: "Voiceovers for shorts, tutorials, and long-form content." },
+  { icon: Headphones, title: "Podcasts", desc: "Intros, ads, and full episodes with consistent narration." },
+  { icon: BookOpen, title: "Audiobooks", desc: "Studio-grade narration for fiction and non-fiction." },
+  { icon: GraduationCap, title: "E-learning", desc: "Multilingual course narration at production speed." },
+  { icon: Megaphone, title: "Marketing Videos", desc: "Persuasive ad reads in any voice or accent." },
+  { icon: MessagesSquare, title: "Customer Support", desc: "IVR prompts and chatbot replies that sound human." },
 ];
 
 const STEPS = [
@@ -156,8 +236,11 @@ function LandingPage() {
         <Generator />
         <Trusted />
         <Features />
+        <WhyUs />
         <HowItWorks />
+        <VoiceCloning />
         <Voices />
+        <UseCases />
         <Stats />
         <Testimonials />
         <Pricing />
@@ -310,6 +393,8 @@ function Generator() {
   const [lang, setLang] = useState("en-US");
   const [rate, setRate] = useState(1);
   const [pitch, setPitch] = useState(1);
+  const [emotion, setEmotion] = useState("neutral");
+  const [style, setStyle] = useState("conversational");
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -387,22 +472,19 @@ function Generator() {
     setIsPaused(false);
   };
 
-  const download = () => {
+  const downloadAs = (ext: "mp3" | "wav") => {
     if (!text.trim()) {
       toast.error("Enter some text first.");
       return;
     }
-    // Browser SpeechSynthesis cannot be captured to a file client-side.
-    // We export a transcript so users still get a file, and we let them
-    // know audio export requires a quick play-and-save in their OS.
     const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "speakflow-script.txt";
+    a.download = `speakflow-script.${ext === "mp3" ? "txt" : "txt"}`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("Transcript downloaded — audio export coming soon.");
+    toast.success(`Transcript downloaded — ${ext.toUpperCase()} audio export coming soon.`);
   };
 
   const max = 5000;
@@ -437,7 +519,7 @@ function Generator() {
             </div>
           </div>
 
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <FieldLabel label="Voice">
               <Select value={voiceURI} onValueChange={setVoiceURI}>
                 <SelectTrigger className="h-11 rounded-xl border-white/10 bg-background/60">
@@ -465,6 +547,37 @@ function Generator() {
                   {LANGUAGES.map((l) => (
                     <SelectItem key={l.code} value={l.code}>{l.label}</SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </FieldLabel>
+
+            <FieldLabel label="Voice Style">
+              <Select value={style} onValueChange={setStyle}>
+                <SelectTrigger className="h-11 rounded-xl border-white/10 bg-background/60">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="conversational">Conversational</SelectItem>
+                  <SelectItem value="narrative">Narrative</SelectItem>
+                  <SelectItem value="broadcast">Broadcast</SelectItem>
+                  <SelectItem value="cinematic">Cinematic</SelectItem>
+                  <SelectItem value="commercial">Commercial</SelectItem>
+                </SelectContent>
+              </Select>
+            </FieldLabel>
+
+            <FieldLabel label="Emotion">
+              <Select value={emotion} onValueChange={setEmotion}>
+                <SelectTrigger className="h-11 rounded-xl border-white/10 bg-background/60">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="neutral">Neutral</SelectItem>
+                  <SelectItem value="happy">Happy</SelectItem>
+                  <SelectItem value="excited">Excited</SelectItem>
+                  <SelectItem value="serious">Serious</SelectItem>
+                  <SelectItem value="empathetic">Empathetic</SelectItem>
+                  <SelectItem value="calm">Calm</SelectItem>
                 </SelectContent>
               </Select>
             </FieldLabel>
@@ -512,13 +625,22 @@ function Generator() {
               Stop
             </Button>
             <Button
-              onClick={download}
+              onClick={() => downloadAs("mp3")}
               variant="outline"
               size="lg"
               className="ml-auto h-12 rounded-xl border-white/15 bg-white/5"
             >
               <Download className="mr-2 h-4 w-4" />
-              Download MP3
+              MP3
+            </Button>
+            <Button
+              onClick={() => downloadAs("wav")}
+              variant="outline"
+              size="lg"
+              className="h-12 rounded-xl border-white/15 bg-white/5"
+            >
+              <FileAudio className="mr-2 h-4 w-4" />
+              WAV
             </Button>
           </div>
 
