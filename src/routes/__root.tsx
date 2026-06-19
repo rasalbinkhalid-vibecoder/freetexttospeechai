@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Free AI Text to Speech Generator & Voice Cloning Tool | Voic" },
+      { name: "description", content: "Convert text into realistic AI voices instantly. Clone your own voice, generate natural speech, and download MP3 audio for free. No signup required. Supports mu" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Free AI Text to Speech Generator & Voice Cloning Tool | Voic" },
+      { property: "og:description", content: "Convert text into realistic AI voices instantly. Clone your own voice, generate natural speech, and download MP3 audio for free. No signup required. Supports mu" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Free AI Text to Speech Generator & Voice Cloning Tool | Voic" },
+      { name: "twitter:description", content: "Convert text into realistic AI voices instantly. Clone your own voice, generate natural speech, and download MP3 audio for free. No signup required. Supports mu" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d5b117ee-1e13-4f23-af31-fce593c84456/id-preview-54df3107--051b1aa3-87d0-470d-898d-11fb882b86c5.lovable.app-1781869294330.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d5b117ee-1e13-4f23-af31-fce593c84456/id-preview-54df3107--051b1aa3-87d0-470d-898d-11fb882b86c5.lovable.app-1781869294330.png" },
     ],
     links: [
       {
