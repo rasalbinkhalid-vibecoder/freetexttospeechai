@@ -1025,3 +1025,319 @@ function SectionHead({ eyebrow, title, desc }: { eyebrow: string; title: string;
     </div>
   );
 }
+
+/* ----------------------------- Why Us ----------------------------- */
+
+function WhyUs() {
+  return (
+    <section className="relative mt-28 px-4 sm:mt-36">
+      <div className="mx-auto max-w-6xl">
+        <SectionHead
+          eyebrow="Why choose us"
+          title="The complete AI voice stack"
+          desc="One platform for synthesis, cloning, and editing — built for speed and quality."
+        />
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {WHY_US.map((f, i) => (
+            <motion.div
+              key={f.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.05 }}
+              className="group relative overflow-hidden rounded-2xl glass p-6 font-card transition hover:border-secondary/40"
+            >
+              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-secondary/20 opacity-0 blur-3xl transition group-hover:opacity-100" />
+              <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-accent shadow-glow">
+                <f.icon className="h-5 w-5 text-white" />
+              </div>
+              <h3 className="mt-5 text-lg font-semibold">{f.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{f.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ----------------------------- Use Cases ----------------------------- */
+
+function UseCases() {
+  return (
+    <section className="relative mt-28 px-4 sm:mt-36">
+      <div className="mx-auto max-w-6xl">
+        <SectionHead
+          eyebrow="Use cases"
+          title="Built for every kind of creator"
+          desc="From solo creators to enterprise teams — generate voice for any workflow."
+        />
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {USE_CASES.map((u, i) => (
+            <motion.div
+              key={u.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.04 }}
+              className="group flex items-start gap-4 rounded-2xl glass p-6 font-card transition hover:border-primary/40"
+            >
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/5 ring-1 ring-white/10 transition group-hover:bg-gradient-brand">
+                <u.icon className="h-5 w-5 text-foreground" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-base font-semibold">{u.title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{u.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ----------------------------- Voice Cloning ----------------------------- */
+
+function VoiceCloning() {
+  const [file, setFile] = useState<File | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [recordTime, setRecordTime] = useState(0);
+  const recRef = useRef<MediaRecorder | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [clones, setClones] = useState<{ name: string; date: string }[]>([]);
+
+  const acceptFile = (f?: File | null) => {
+    if (!f) return;
+    if (!f.type.startsWith("audio/")) {
+      toast.error("Please upload an audio file.");
+      return;
+    }
+    if (f.size > 25 * 1024 * 1024) {
+      toast.error("Audio file must be under 25 MB.");
+      return;
+    }
+    setFile(f);
+    toast.success(`"${f.name}" ready for analysis.`);
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const rec = new MediaRecorder(stream);
+      const chunks: Blob[] = [];
+      rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+      rec.onstop = () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(chunks, { type: "audio/webm" });
+        const f = new File([blob], `voice-sample-${Date.now()}.webm`, { type: "audio/webm" });
+        acceptFile(f);
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        setRecordTime(0);
+        setRecording(false);
+      };
+      rec.start();
+      recRef.current = rec;
+      setRecording(true);
+      setRecordTime(0);
+      intervalRef.current = setInterval(() => setRecordTime((t) => t + 1), 1000);
+    } catch {
+      toast.error("Microphone access denied.");
+    }
+  };
+
+  const stopRecording = () => {
+    recRef.current?.stop();
+  };
+
+  const createModel = () => {
+    if (!file) {
+      toast.error("Upload or record a voice sample first.");
+      return;
+    }
+    toast.loading("Analyzing voice…", { id: "clone" });
+    setTimeout(() => {
+      toast.success("Voice model created securely.", { id: "clone" });
+      setClones((c) => [
+        { name: file.name.replace(/\.[^.]+$/, ""), date: new Date().toLocaleDateString() },
+        ...c,
+      ]);
+      setFile(null);
+    }, 1500);
+  };
+
+  return (
+    <section id="cloning" className="relative mt-28 px-4 sm:mt-36">
+      <div className="mx-auto max-w-6xl">
+        <SectionHead
+          eyebrow="AI Voice Cloning"
+          title="Clone your voice in minutes"
+          desc="Upload a sample or record live — our AI builds a secure personal voice model you can use anywhere."
+        />
+
+        <div className="mt-12 grid gap-6 lg:grid-cols-5">
+          {/* Upload / Record */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="relative rounded-3xl glass-strong p-6 shadow-card lg:col-span-3"
+          >
+            <div className="pointer-events-none absolute -inset-px -z-10 rounded-3xl bg-gradient-accent opacity-20 blur-2xl" />
+            <h3 className="font-display text-xl font-bold">Upload Voice Sample</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              30 seconds of clear speech works best. MP3, WAV, M4A, WebM — up to 25 MB.
+            </p>
+
+            <label
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragActive(true);
+              }}
+              onDragLeave={() => setDragActive(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDragActive(false);
+                acceptFile(e.dataTransfer.files?.[0]);
+              }}
+              className={`mt-5 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-10 text-center transition ${
+                dragActive
+                  ? "border-primary bg-primary/10"
+                  : "border-white/15 bg-background/40 hover:border-primary/60 hover:bg-primary/5"
+              }`}
+            >
+              <input
+                ref={inputRef}
+                type="file"
+                accept="audio/*"
+                className="hidden"
+                onChange={(e) => acceptFile(e.target.files?.[0])}
+              />
+              <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-brand shadow-glow">
+                <UploadCloud className="h-7 w-7 text-white" />
+              </div>
+              <p className="mt-4 font-display text-base font-semibold">
+                {file ? file.name : "Drop your audio file here"}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : "or click to browse"}
+              </p>
+            </label>
+
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <Button
+                variant="outline"
+                className="h-11 rounded-xl border-white/15 bg-white/5"
+                onClick={() => inputRef.current?.click()}
+              >
+                <Upload className="mr-2 h-4 w-4" /> Choose File
+              </Button>
+              {!recording ? (
+                <Button
+                  variant="outline"
+                  className="h-11 rounded-xl border-white/15 bg-white/5"
+                  onClick={startRecording}
+                >
+                  <Mic className="mr-2 h-4 w-4" /> Record Voice
+                </Button>
+              ) : (
+                <Button
+                  className="h-11 rounded-xl bg-destructive text-white"
+                  onClick={stopRecording}
+                >
+                  <Square className="mr-2 h-4 w-4" /> Stop · {recordTime}s
+                </Button>
+              )}
+              {file && (
+                <Button
+                  variant="outline"
+                  className="h-11 rounded-xl border-white/15 bg-white/5"
+                  onClick={() => setFile(null)}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" /> Remove
+                </Button>
+              )}
+              <Button
+                onClick={createModel}
+                className="ml-auto h-11 rounded-xl bg-gradient-brand text-white shadow-glow hover:opacity-90"
+              >
+                <Sparkles className="mr-2 h-4 w-4" /> Create Voice Model
+              </Button>
+            </div>
+
+            {/* Workflow */}
+            <div className="mt-8 grid gap-3 sm:grid-cols-4">
+              {[
+                { n: 1, label: "Upload sample" },
+                { n: 2, label: "AI analyzes" },
+                { n: 3, label: "Model created" },
+                { n: 4, label: "Generate speech" },
+              ].map((s) => (
+                <div key={s.n} className="rounded-xl glass p-3 text-center">
+                  <div className="font-display text-sm font-bold text-gradient">Step {s.n}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Library */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="rounded-3xl glass-strong p-6 shadow-card lg:col-span-2"
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="font-display text-xl font-bold">Voice Library</h3>
+              <span className="inline-flex items-center gap-1 rounded-full bg-secondary/15 px-2.5 py-1 text-xs text-secondary">
+                <Lock className="h-3 w-3" /> Encrypted
+              </span>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Personal voice models, stored privately on your device.
+            </p>
+
+            <div className="mt-5 space-y-2">
+              {clones.length === 0 && (
+                <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center">
+                  <Library className="mx-auto h-8 w-8 text-muted-foreground" />
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    No voice models yet. Create one to get started.
+                  </p>
+                </div>
+              )}
+              {clones.map((c, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-3 rounded-xl glass p-3 transition hover:border-primary/40"
+                >
+                  <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-brand shadow-glow">
+                    <Mic className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-semibold">{c.name}</div>
+                    <div className="text-xs text-muted-foreground">Created {c.date}</div>
+                  </div>
+                  <Button size="sm" variant="outline" className="h-8 rounded-lg border-white/15 bg-white/5">
+                    <Play className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+
+            <ul className="mt-6 space-y-2 text-xs text-muted-foreground">
+              <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-secondary" /> Secure voice storage</li>
+              <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-secondary" /> Generate speech using cloned voice</li>
+              <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-secondary" /> Manage and delete anytime</li>
+            </ul>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
