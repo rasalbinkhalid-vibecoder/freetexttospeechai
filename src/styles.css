@@ -140,9 +140,6 @@
 
 @layer utilities {
   .font-card { font-family: var(--font-card); }
-  }
-
-@layer utilities {
   .glass {
     background: linear-gradient(180deg, oklch(1 0 0 / 0.04), oklch(1 0 0 / 0.01));
     border: 1px solid oklch(1 0 0 / 0.08);
